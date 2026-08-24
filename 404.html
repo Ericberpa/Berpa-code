@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script data-cfasync="false" src="//d1zhmd1pxxxajf.cloudfront.net/?dmhzd=1231291"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 - Page Not Found | Project Stark</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --accent: #a855f7;
+      --accent-hover: #9333ea;
+      --text-main: #ffffff;
+      --text-subtle: #cfcfcf;
+      --bg-dark: #0e0e11;
+      --glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: rgba(0, 0, 0, 0.55);
+
+      /* Animation tuning (match main page) */
+      --bg-dur: 1600ms;
+      --reveal-dur: 950ms;
+      --base-delay: 400ms;
+      --step-delay: 260ms;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: clamp(16px, 3vw, 28px);
+      background: var(--bg-dark);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow: hidden;
+    }
+
+    /* Background gradients (same as main) */
+    .bg {
+      position: fixed;
+      inset: -2% -2% -2% -2%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(1000px 700px at 8% -10%, rgba(168,85,247,0.25), transparent 45%),
+        radial-gradient(900px 650px at 110% 110%, rgba(236,72,153,0.20), transparent 50%);
+      opacity: 0;
+      transform: scale(1.02);
+      filter: saturate(0.9);
+    }
+    .is-ready .bg {
+      animation: bgIn var(--bg-dur) ease forwards;
+    }
+    @keyframes bgIn {
+      to {
+        opacity: 1;
+        transform: none;
+        filter: saturate(1);
+      }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--glass);
+      background: color-mix(in oklab, #fff 6%, transparent);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(24px) saturate(1.1);
+      -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      border-radius: 28px;
+      box-shadow:
+        0 24px 64px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+      isolation: isolate;
+    }
+
+    /* Border glow */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.45), rgba(236,72,153,0.35));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .is-ready .card::before {
+      animation: fadeIn 1100ms ease forwards;
+      animation-delay: calc(var(--base-delay) + var(--step-delay));
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* Staggered reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px) scale(0.985);
+      will-change: opacity, transform;
+    }
+    .is-ready .reveal {
+      animation: revealUp var(--reveal-dur) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: var(--delay, 0ms);
+    }
+    @keyframes revealUp {
+      60% { opacity: 1; }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .error-wrap {
+      margin-bottom: 20px;
+    }
+
+    .error-code {
+      font-size: 4.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent) 0%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 8px;
+      animation: glitch 3s infinite;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    p {
+      color: var(--text-subtle);
+      font-size: 1rem;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    /* Buttons (same style as main) */
+    .btn {
+      appearance: none;
+      -webkit-appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-subtle);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform .35s ease, box-shadow .35s ease, background .35s ease, color .35s ease, border-color .35s ease;
+      box-shadow: none;
+    }
+
+    .btn:hover {
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent), #8b39eb);
+      border-color: transparent;
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 10px 24px rgba(168,85,247,0.38);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 14px rgba(168,85,247,0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      color: var(--text-subtle);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(168,85,247,0.7);
+      color: #fff;
+    }
+
+    .card :is(.btn):focus-visible {
+      outline: 3px solid rgba(168,85,247,0.7);
+      outline-offset: 2px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: #8b8b8b;
+      opacity: 0.9;
+    }
+
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20%      { transform: translate(-1px, 1px); }
+      40%      { transform: translate(-1px, -1px); }
+      60%      { transform: translate(1px, 1px); }
+      80%      { transform: translate(1px, -1px); }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 36px 24px; }
+      .error-code { font-size: 3.8rem; }
+      h1 { font-size: 1.5rem; }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      body { overflow: auto; }
+      .bg { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
+      .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .card::before { opacity: 1 !important; animation: none !important; }
+      .error-code { animation: none !important; }
+      .btn:hover, .btn:active { transform: none; }
+    }
+
+    ::selection { background: var(--accent); color: #000; }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="card reveal" role="main" aria-labelledby="title"
+        style="--delay: calc(var(--base-delay));">
+    <div class="error-wrap reveal"
+         style="--delay: calc(var(--base-delay) + var(--step-delay));">
+      <div class="error-code">404</div>
+      <div class="subtitle">Page Not Found</div>
+    </div>
+
+    <h1 id="title" class="reveal"
+        style="--delay: calc(var(--base-delay) + var(--step-delay) * 2);">
+      Lost in the void.
+    </h1>
+
+    <p class="reveal"
+       style="--delay: calc(var(--base-delay) + var(--step-delay) * 3);">
+      Looks like you've ventured into uncharted territory. The page you're looking for doesn’t exist
+      or may have been moved.
+    </p>
+
+    <nav class="actions" aria-label="404 actions">
+      <button
+        class="btn reveal"
+        type="button"
+        data-href="/"
+        style="--delay: calc(var(--base-delay) + var(--step-delay) * 4);">
+        Return Home
+      </button>
+
+      <button
+        class="btn btn-secondary reveal"
+        type="button"
+        data-action="back"
+        style="--delay: calc(var(--base-delay) + var(--step-delay) * 5);">
+        Go Back
+      </button>
+    </nav>
+
+    <div class="footer reveal"
+         style="--delay: calc(var(--base-delay) + var(--step-delay) * 6);">
+      © <span id="year">2025</span> Project Stark
+    </div>
+  </main>
+
+  <script>
+  (function () {
+    // Auto year
+    var y = document.getElementById('year');
+    if (y) y.textContent = new Date().getFullYear();
+
+    // Fade-in trigger (same pattern as main)
+    window.addEventListener('load', function () {
+      document.body.classList.add('is-ready');
+    });
+
+    // Button behaviors (no URL in status bar)
+    var btns = document.querySelectorAll('.btn');
+    btns.forEach(function (btn) {
+      var href = btn.getAttribute('data-href');
+      var action = btn.getAttribute('data-action');
+
+      btn.addEventListener('click', function () {
+        if (action === 'back') {
+          if (window.history.length > 1) {
+            history.back();
+          } else {
+            window.location.href = '/';
+          }
+          return;
+        }
+        if (href) {
+          window.location.href = href;
+        }
+      });
+    });
+  })();
+  </script>
+
+  <!-- URL-masking logic kept as-is, just moved after main logic -->
+  <script>
+  (function () {
+    const CHANGE_EVERY_MS = 300;   // how often to rotate the token
+    const TOKEN_LENGTH   = 10;     // token size
+    const PARAM_NAME     = "PS";   // query param to rotate
+
+    function randChar() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      if (window.crypto && crypto.getRandomValues) {
+        const buf = new Uint8Array(1);
+        crypto.getRandomValues(buf);
+        return chars[buf[0] % chars.length];
+      }
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
+    function makeToken(n) {
+      let s = "";
+      for (let i = 0; i < n; i++) s += randChar();
+      return s;
+    }
+
+    function baseUrl() {
+      // Keep origin + root path only (same behavior as before)
+      return window.location.origin + "/";
+    }
+
+    function setUrl(token) {
+      const url = `${baseUrl()}?${PARAM_NAME}=${token}`;
+      history.replaceState({}, "", url);
+    }
+
+    history.replaceState({}, "", baseUrl());
+    setUrl(makeToken(TOKEN_LENGTH));
+    setInterval(() => setUrl(makeToken(TOKEN_LENGTH)), CHANGE_EVERY_MS);
+
+    window.addEventListener("popstate", () => {});
+  })();
+  </script>
+</body>
+</html>

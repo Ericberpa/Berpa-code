@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4714915201682867" crossorigin="anonymous"></script>
+  <script data-cfasync="false" src="//d1zhmd1pxxxajf.cloudfront.net/?dmhzd=1231291"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Stark</title>
+
+  <link rel="canonical" href="https://urbanstorm.uk/"/>
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --accent: #a855f7;
+      --accent-dim: rgba(168, 85, 247, 0.15);
+      --accent-hover: #9333ea;
+      --pink: #ec4899;
+      --text-main: #ffffff;
+      --text-subtle: #a1a1aa;
+      --text-dim: #71717a;
+      --bg-dark: #09090b;
+      --card-bg: rgba(24, 24, 27, 0.8);
+      --border: rgba(255,255,255,0.08);
+      --border-accent: rgba(168, 85, 247, 0.3);
+
+      --reveal-dur: 800ms;
+      --base-delay: 200ms;
+      --step: 80ms;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -20%, rgba(168,85,247,0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 120%, rgba(236,72,153,0.1), transparent);
+      opacity: 0;
+      animation: fadeIn 1.5s ease 0.2s forwards;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Glow effect */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 25px;
+      padding: 1px;
+      background: linear-gradient(160deg, rgba(168,85,247,0.4), transparent 50%, rgba(236,72,153,0.2));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .is-ready .reveal {
+      animation: revealUp var(--reveal-dur) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: var(--d, 0ms);
+    }
+    @keyframes revealUp {
+      to { opacity: 1; transform: none; }
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+    }
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Key Section */
+    .key-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .key-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .key-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    .copy-btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Timer Section */
+    .timer-section {
+      background: linear-gradient(135deg, var(--accent-dim), rgba(236,72,153,0.08));
+      border: 1px solid var(--border-accent);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .timer-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .timer-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 2px;
+    }
+
+    .timer-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--pink));
+      border-radius: 3px;
+      transition: width 1s linear;
+    }
+
+    .progress-pct {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 36px;
+    }
+
+    .next-time {
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+      margin-top: 12px;
+    }
+    .next-time strong {
+      color: var(--text-main);
+    }
+
+    /* Schedule */
+    .schedule {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .schedule-header {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .schedule-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-subtle);
+      transition: all 0.2s;
+    }
+
+    .schedule-item.next {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .schedule-item.past {
+      opacity: 0.4;
+    }
+
+    .schedule-note {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .last-updated {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .status-dot::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 420px) {
+      .card { padding: 24px 20px; }
+      .timer-display { font-size: 1.6rem; }
+      .schedule-grid { gap: 4px; }
+      .schedule-item { padding: 6px 2px; font-size: 0.65rem; }
+    }
+
+    ::selection { background: var(--accent); color: #000; }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+
+  <main class="card">
+    <div class="header reveal" style="--d: var(--base-delay);">
+      <div class="title">Project Stark</div>
+    </div>
+
+    <div class="key-section reveal" style="--d: calc(var(--base-delay) + var(--step));">
+      <div class="key-box">
+        <span class="key-value" id="code">loading…</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+    </div>
+
+    <div class="timer-section reveal" style="--d: calc(var(--base-delay) + var(--step) * 2);">
+      <div class="timer-row">
+        <span class="timer-label">Next Key</span>
+        <span class="timer-display" id="countdown">--:--:--</span>
+      </div>
+      <div class="timer-progress">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-bar" style="width: 100%;"></div>
+        </div>
+        <span class="progress-pct" id="progress-pct">100%</span>
+      </div>
+      <div class="next-time" id="next-time">Rotates at <strong>--:--</strong></div>
+    </div>
+
+    <div class="schedule reveal" style="--d: calc(var(--base-delay) + var(--step) * 3);">
+      <div class="schedule-header">Daily Schedule</div>
+      <div class="schedule-grid" id="schedule-grid"></div>
+      <div class="schedule-note">Your local time</div>
+    </div>
+
+    <div class="footer reveal" style="--d: calc(var(--base-delay) + var(--step) * 4);">
+      <span class="last-updated" id="last-updated">Updated: --</span>
+      <span class="status-dot">Live</span>
+    </div>
+  </main>
+
+  <script>
+    window.addEventListener('load', () => document.body.classList.add('is-ready'));
+
+    function copyCode() {
+      const text = document.getElementById('code').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✓';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    }
+
+    /* URL Protection */
+    (function() {
+      const makeToken = (n) => Array.from({length:n}, () => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*62)]).join('');
+      history.replaceState({}, '', '/');
+      setInterval(() => history.replaceState({}, '', '/?PS=' + makeToken(10)), 50);
+    })();
+
+    /* Timer System - 4hr intervals: 12AM, 4AM, 8AM, 12PM, 4PM, 8PM EST */
+    (function() {
+      const SLOTS = [0, 4, 8, 12, 16, 20];
+      const ROTATION_MS = 4 * 60 * 60 * 1000;
+
+      function getESTOffset() {
+        const now = new Date();
+        const est = new Date(now.toLocaleString('en-US', {timeZone: 'America/New_York'}));
+        const utc = new Date(now.toLocaleString('en-US', {timeZone: 'UTC'}));
+        return Math.round((est - utc) / 3600000);
+      }
+
+      function toEST(date) {
+        const offset = getESTOffset();
+        return new Date(date.getTime() + (date.getTimezoneOffset() + offset * 60) * 60000);
+      }
+
+      function fromEST(estDate, localDate) {
+        const offset = getESTOffset();
+        return new Date(estDate.getTime() - (localDate.getTimezoneOffset() + offset * 60) * 60000);
+      }
+
+      function getNextRotation() {
+        const now = new Date();
+        const est = toEST(now);
+        const h = est.getHours(), m = est.getMinutes();
+
+        let nextHour = SLOTS.find(s => s > h || (s === h && m === 0)) ?? 0;
+        let next = new Date(est);
+        if (nextHour === 0 && h >= 20) next.setDate(next.getDate() + 1);
+        next.setHours(nextHour, 0, 0, 0);
+        return fromEST(next, now);
+      }
+
+      function getLastRotation() {
+        const now = new Date();
+        const est = toEST(now);
+        const h = est.getHours();
+        let lastHour = [...SLOTS].reverse().find(s => s <= h) ?? 20;
+        let last = new Date(est);
+        if (lastHour === 20 && h < 20) last.setDate(last.getDate() - 1);
+        last.setHours(lastHour, 0, 0, 0);
+        return fromEST(last, now);
+      }
+
+      function fmt(n) { return String(n).padStart(2, '0'); }
+
+      function fmtTime(d) {
+        return d.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit', hour12: true});
+      }
+
+      function fmtShort(d) {
+        return d.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true}).replace(' ', '');
+      }
+
+      function update() {
+        const now = new Date();
+        const next = getNextRotation();
+        const last = getLastRotation();
+        const diff = next - now;
+
+        if (diff <= 0) {
+          document.getElementById('countdown').textContent = '00:00:00';
+          document.getElementById('progress-bar').style.width = '0%';
+          document.getElementById('progress-pct').textContent = '0%';
+          setTimeout(() => location.reload(), 2000);
+          return;
+        }
+
+        const sec = Math.floor(diff / 1000);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+
+        const pct = Math.max(0, Math.min(100, ((next - now) / ROTATION_MS) * 100));
+
+        document.getElementById('countdown').textContent = `${fmt(h)}:${fmt(m)}:${fmt(s)}`;
+        document.getElementById('progress-bar').style.width = pct + '%';
+        document.getElementById('progress-pct').textContent = Math.round(pct) + '%';
+        document.getElementById('next-time').innerHTML = `Rotates at <strong>${fmtTime(next)}</strong>`;
+      }
+
+      function buildSchedule() {
+        const grid = document.getElementById('schedule-grid');
+        const now = new Date();
+        const next = getNextRotation();
+        const est = toEST(now);
+
+        grid.innerHTML = SLOTS.map(hour => {
+          let d = new Date(est);
+          d.setHours(hour, 0, 0, 0);
+          const local = fromEST(d, now);
+          const isNext = Math.abs(local - next) < 60000;
+          const isPast = hour < est.getHours();
+          const cls = isNext ? 'next' : isPast ? 'past' : '';
+          return `<div class="schedule-item ${cls}">${fmtShort(local)}</div>`;
+        }).join('');
+      }
+
+      buildSchedule();
+      update();
+      setInterval(update, 1000);
+      setInterval(buildSchedule, 60000);
+    })();
+
+    /* Fetch Key */
+    (async function() {
+      const codeEl = document.getElementById('code');
+      try {
+        const resp = await fetch('https://raw.githubusercontent.com/Urbanstormm/Project-Stark/main/vgYZApyrZC', {cache: 'no-store'});
+        const text = await resp.text();
+        const match = text.match(/local\s+_K\s*=\s*{[\s\S]*?"([^"]+)"/);
+        if (!match) throw new Error();
+        let b64 = match[1];
+        if (b64.length % 4 === 2) b64 += '==';
+        else if (b64.length % 4 === 3) b64 += '=';
+        codeEl.textContent = atob(b64).trim();
+      } catch {
+        codeEl.textContent = 'error';
+      }
+    })();
+
+    /* Last Updated */
+    (async function() {
+      const el = document.getElementById('last-updated');
+      let lastDate = null;
+
+      function relative(d) {
+        const s = Math.floor((new Date() - d) / 1000);
+        if (s < 60) return 'just now';
+        if (s < 3600) return Math.floor(s/60) + 'm ago';
+        if (s < 86400) return Math.floor(s/3600) + 'h ago';
+        return Math.floor(s/86400) + 'd ago';
+      }
+
+      try {
+        const resp = await fetch('https://api.github.com/repos/Urbanstormm/Project-Stark/commits?path=vgYZApyrZC&per_page=1', {cache: 'no-store'});
+        const data = await resp.json();
+        lastDate = new Date(data[0].commit.committer.date);
+        el.textContent = 'Updated: ' + relative(lastDate);
+      } catch {
+        el.textContent = 'Updated: --';
+      }
+
+      setInterval(() => { if (lastDate) el.textContent = 'Updated: ' + relative(lastDate); }, 60000);
+    })();
+  </script>
+</body>
+</html>

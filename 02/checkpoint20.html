@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+  (function () {
+    // === Config ===
+    const CHANGE_EVERY_MS = 300;   // how often to rotate the token
+    const TOKEN_LENGTH   = 10;     // token size
+    const PARAM_NAME     = "PS";    // query param to rotate
+
+    // Better RNG (falls back to Math.random)
+    function randChar() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      if (window.crypto && crypto.getRandomValues) {
+        const buf = new Uint8Array(1);
+        crypto.getRandomValues(buf);
+        return chars[buf[0] % chars.length];
+      }
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
+    function makeToken(n) {
+      let s = "";
+      for (let i = 0; i < n; i++) s += randChar();
+      return s;
+    }
+
+    function baseUrl() {
+      // Keep origin + root path only
+      return window.location.origin + "/";
+    }
+
+    function setUrl(token) {
+      const url = `${baseUrl()}?${PARAM_NAME}=${token}`;
+      history.replaceState({}, "", url);
+    }
+
+    // Strip any existing query/hash, then start rotating
+    history.replaceState({}, "", baseUrl());
+    setUrl(makeToken(TOKEN_LENGTH));
+    setInterval(() => setUrl(makeToken(TOKEN_LENGTH)), CHANGE_EVERY_MS);
+
+    // Optional: ignore back/forward
+    window.addEventListener("popstate", () => {});
+  })();
+</script>
+<script data-cfasync="false" src="//d1zhmd1pxxxajf.cloudfront.net/?dmhzd=1231291"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4714915201682867"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Stark</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --accent: #a855f7;
+      --accent-hover: #9333ea;
+      --bg-dark: #0e0e11;
+      --glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --text-subtle: #cfcfcf;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 22px;
+      max-width: 420px;
+      width: 100%;
+      padding: 40px 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+
+    .title {
+      display: block;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .title:hover {
+      opacity: 0.8;
+    }
+
+    .container p {
+      color: var(--text-subtle);
+      font-size: 1rem;
+      margin-bottom: 28px;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.02);
+      box-shadow: 0 4px 18px rgba(168, 85, 247, 0.3);
+    }
+
+    .footer {
+      margin-top: 24px;
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="https://urbanstorm.uk" class="title">Project Stark</a>
+
+    <p>You're continuing the key system verification process.  
+    Complete the next 2 checkpoints to receive your access key.</p>
+
+    <button class="btn" onclick="window.location.href='https://workink.net/21D6/jsp5grlt'">Next</button>
+
+    <div class="footer">Checkpoint 2 of 3</div>
+  </div>
+
+</body>
+</html>
+
+
+
+
+

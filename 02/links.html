@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+  (function () {
+    // === Config ===
+    const CHANGE_EVERY_MS = 300;   // how often to rotate the token
+    const TOKEN_LENGTH   = 10;     // token size
+    const PARAM_NAME     = "PS";    // query param to rotate
+
+    // Better RNG (falls back to Math.random)
+    function randChar() {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      if (window.crypto && crypto.getRandomValues) {
+        const buf = new Uint8Array(1);
+        crypto.getRandomValues(buf);
+        return chars[buf[0] % chars.length];
+      }
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
+    function makeToken(n) {
+      let s = "";
+      for (let i = 0; i < n; i++) s += randChar();
+      return s;
+    }
+
+    function baseUrl() {
+      // Keep origin + root path only
+      return window.location.origin + "/";
+    }
+
+    function setUrl(token) {
+      const url = `${baseUrl()}?${PARAM_NAME}=${token}`;
+      history.replaceState({}, "", url);
+    }
+
+    // Strip any existing query/hash, then start rotating
+    history.replaceState({}, "", baseUrl());
+    setUrl(makeToken(TOKEN_LENGTH));
+    setInterval(() => setUrl(makeToken(TOKEN_LENGTH)), CHANGE_EVERY_MS);
+
+    // Optional: ignore back/forward
+    window.addEventListener("popstate", () => {});
+  })();
+  </script>
+<script data-cfasync="false" src="//d1zhmd1pxxxajf.cloudfront.net/?dmhzd=1231291"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4714915201682867"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Stark</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --accent: #a855f7;
+      --accent-hover: #9333ea;
+      --text-main: #ffffff;
+      --text-subtle: #cfcfcf;
+      --bg-dark: #0e0e11;
+      --glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: rgba(0, 0, 0, 0.55);
+
+      --bg-dur: 1600ms;
+      --reveal-dur: 950ms;
+      --base-delay: 400ms;
+      --step-delay: 260ms;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg-dark);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: clamp(16px, 3vw, 28px);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow: hidden;
+    }
+
+    /* Background gradients */
+    .bg {
+      position: fixed;
+      inset: -2% -2% -2% -2%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(1000px 700px at 8% -10%, rgba(168,85,247,0.25), transparent 45%),
+        radial-gradient(900px 650px at 110% 110%, rgba(236,72,153,0.20), transparent 50%);
+      opacity: 0;
+      transform: scale(1.02);
+      filter: saturate(0.9);
+    }
+    .is-ready .bg {
+      animation: bgIn var(--bg-dur) ease forwards;
+    }
+    @keyframes bgIn {
+      to {
+        opacity: 1;
+        transform: none;
+        filter: saturate(1);
+      }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--glass);
+      background: color-mix(in oklab, #fff 6%, transparent);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(24px) saturate(1.1);
+      -webkit-backdrop-filter: blur(24px) saturate(1.1);
+      border-radius: 28px;
+      padding: 36px 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow:
+        0 24px 64px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Border glow */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.45), rgba(236,72,153,0.35));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .is-ready .card::before {
+      animation: fadeIn 1100ms ease forwards;
+      animation-delay: calc(var(--base-delay) + var(--step-delay));
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* Staggered reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px) scale(0.985);
+      will-change: opacity, transform;
+    }
+    .is-ready .reveal {
+      animation: revealUp var(--reveal-dur) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: var(--delay, 0ms);
+    }
+    @keyframes revealUp {
+      60% { opacity: 1; }
+      to  { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .title-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background: transparent;
+      font-size: 1.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 4px;
+
+      /* gradient text like index h1 */
+      background-image: linear-gradient(135deg, var(--accent) 0%, #ec4899 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .title-btn:hover {
+      opacity: 0.9;
+    }
+
+    .card p {
+      color: var(--text-subtle);
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: grid;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: transform .35s ease, box-shadow .35s ease,
+                  background .35s ease, color .35s ease, border-color .35s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: linear-gradient(180deg, var(--accent), #8b39eb);
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 10px 24px rgba(168,85,247,0.38);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 14px rgba(168,85,247,0.25);
+    }
+
+    .card :is(.btn, .title-btn):focus-visible {
+      outline: 3px solid rgba(168,85,247,0.7);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 30px 22px; }
+      .title-btn { font-size: 1.6rem; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      body { overflow: auto; }
+      .bg { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
+      .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .card::before { opacity: 1 !important; animation: none !important; }
+      .btn:hover, .btn:active { transform: none; }
+    }
+
+    ::selection { background: var(--accent); color: #000; }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="card reveal" role="main" style="--delay: calc(var(--base-delay));">
+    <button
+      class="title-btn reveal"
+      type="button"
+      data-href="/"
+      style="--delay: calc(var(--base-delay) + var(--step-delay));">
+      Project Stark
+    </button>
+
+    <p class="reveal" style="--delay: calc(var(--base-delay) + var(--step-delay) * 2);">
+      Select a method below to retrieve your access key:
+    </p>
+
+    <div class="actions">
+      <button
+        class="btn reveal"
+        type="button"
+        style="--delay: calc(var(--base-delay) + var(--step-delay) * 4);"
+        onclick="window.location.href='https://loot-link.com/s?qOHggG5B'">
+        LootLabs
+      </button>
+      <button
+        class="btn reveal"
+        type="button"
+        style="--delay: calc(var(--base-delay) + var(--step-delay) * 4);"
+        onclick="window.location.href='https://Urbanstorm.uk/02/checkpoint001.html'">
+        Linkvertise
+      </button>
+      
+      <button
+        class="btn reveal"
+        type="button"
+        style="--delay: calc(var(--base-delay) + var(--step-delay) * 3);"
+        onclick="window.location.href='https://Urbanstorm.uk/02/checkpoint10.html'">
+        Workink
+      </button>
+    </div>
+  </main>
+
+  <script>
+    // Fade-in trigger
+    window.addEventListener('load', function () {
+      document.body.classList.add('is-ready');
+    });
+
+    // Project Stark title button navigation (no URL preview on hover)
+    (function () {
+      var titleBtn = document.querySelector('.title-btn[data-href]');
+      if (titleBtn) {
+        titleBtn.addEventListener('click', function () {
+          var href = titleBtn.getAttribute('data-href');
+          if (href) window.location.href = href;
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
