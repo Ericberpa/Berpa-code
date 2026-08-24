@@ -14,26 +14,6 @@ local Players = Services.Players
 local LocalPlayer = Players.LocalPlayer
 local main
 
--- Discord Invite Function
-local function discord(code)
-	pcall(function()
-		local Request = syn and syn.request or request
-		Request({
-			Url = "http://127.0.0.1:6463/rpc?v=1",
-			Method = "POST",
-			Headers = {
-				["Content-Type"] = "application/json",
-				["Origin"] = "https://discord.com",
-			},
-			Body = Services.HttpService:JSONEncode({
-				cmd = "INVITE_BROWSER",
-				args = { code = code },
-				nonce = Services.HttpService:GenerateGUID(false),
-			}),
-		})
-	end)
-end
-
 main = function()
 
 -- Core Services
@@ -241,22 +221,22 @@ local function loadUiLib()
 					if okRun and lib then
 						return lib
 					end
-					return _G.ProjectStarkUILib
+					return _G.ProjectBerpaUILib
 				end
 			end
 		end
 	end
 	local okRemote, remoteLib = pcall(function()
-		return loadstring(game:HttpGet("https://raw.githubusercontent.com/Urbanstormm/Project-Stark/main/UiLib.lua"))()
+		return loadstring(game:HttpGet("https://raw.githubusercontent.com/Ericberpa/Berpa-code/main/UiLib.lua"))()
 	end)
 	if okRemote and remoteLib then
 		return remoteLib
 	end
-	return _G.ProjectStarkUILib
+	return _G.ProjectBerpaUILib
 end
 
 local Lib = loadUiLib()
-local win = Lib:Window("Project Stark\ná´®Ë¡áµáµáµ á´®áµË¡Ë¡", Color3.fromRGB(120, 81, 169))
+local win = Lib:Window("Project Berpa\nBlade Ball", Color3.fromRGB(120, 81, 169))
 
 -- Create tabs
 local combatTab = win:Tab("Combat")
@@ -329,16 +309,14 @@ securityTab:Toggle("Mod Detection", function(value)
 end)
 
 securityTab:Label("Shutdown if moderator joins")
-securityTab:Label("â ï¸ Use with caution")
+securityTab:Label("Warning: Use with caution")
 
 -- Credits Tab
 Credits:Button("Made by EricBerpa", function()
 	setclipboard("EricBerpa")
 end)
 
-Credits:Button("http://dsc.gg/project-stark - Click to copy", function()
-	setclipboard("http://dsc.gg/project-stark")
-end)
+Credits:Label("Like the script if you enjoyed it!")
 
 Credits:Button("Bind UI Toggle Key (click to set)", function()
 	local once, conn = true, nil

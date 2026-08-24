@@ -1,4 +1,4 @@
--- Project Stark - Legacy compatibility entry point
+-- Project Berpa - Legacy compatibility entry point
 -- The old key system has been removed. This file now forwards directly to Main.lua.
 
 local compiler = loadstring or load
@@ -8,7 +8,7 @@ end
 
 local ok, source = pcall(function()
 	return game:HttpGet(
-		"https://raw.githubusercontent.com/Urbanstormm/Project-Stark/main/Main.lua"
+		"https://raw.githubusercontent.com/Ericberpa/Berpa-code/main/Main.lua"
 	)
 end)
 

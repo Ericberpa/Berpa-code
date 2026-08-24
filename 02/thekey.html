@@ -6,9 +6,9 @@
   <script data-cfasync="false" src="//d1zhmd1pxxxajf.cloudfront.net/?dmhzd=1231291"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project Stark</title>
+  <title>Project Berpa</title>
 
-  <link rel="canonical" href="https://urbanstorm.uk/"/>
+  <link rel="canonical" href="https://ericberpa.github.io/Berpa-code/"/>
   <link rel="icon" type="image/png" href="favicon.png">
 
   <!-- Fonts -->
@@ -336,7 +336,7 @@
 
   <main class="card">
     <div class="header reveal" style="--d: var(--base-delay);">
-      <div class="title">Project Stark</div>
+      <div class="title">Project Berpa</div>
     </div>
 
     <div class="key-section reveal" style="--d: calc(var(--base-delay) + var(--step));">
@@ -500,7 +500,7 @@
     (async function() {
       const codeEl = document.getElementById('code');
       try {
-        const resp = await fetch('https://raw.githubusercontent.com/Urbanstormm/Project-Stark/main/vgYZApyrZC', {cache: 'no-store'});
+        const resp = await fetch('https://raw.githubusercontent.com/Ericberpa/Berpa-code/main/vgYZApyrZC', {cache: 'no-store'});
         const text = await resp.text();
         const match = text.match(/local\s+_K\s*=\s*{[\s\S]*?"([^"]+)"/);
         if (!match) throw new Error();
@@ -527,7 +527,7 @@
       }
 
       try {
-        const resp = await fetch('https://api.github.com/repos/Urbanstormm/Project-Stark/commits?path=vgYZApyrZC&per_page=1', {cache: 'no-store'});
+        const resp = await fetch('https://api.github.com/repos/Ericberpa/Berpa-code/commits?path=vgYZApyrZC&per_page=1', {cache: 'no-store'});
         const data = await resp.json();
         lastDate = new Date(data[0].commit.committer.date);
         el.textContent = 'Updated: ' + relative(lastDate);

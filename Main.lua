@@ -1,4 +1,4 @@
--- Project Stark - No Key Loader
+-- Project Berpa - No Key Loader
 -- Legacy Main.lua entry point kept for compatibility.
 
 local Players = game:GetService("Players")
@@ -51,7 +51,7 @@ local function loadScript()
 	end
 
 	local url =
-		"https://raw.githubusercontent.com/Urbanstormm/Project-Stark/main/"
+		"https://raw.githubusercontent.com/Ericberpa/Berpa-code/main/"
 		.. gameId
 		.. ".lua"
 
