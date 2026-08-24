@@ -332,8 +332,8 @@ securityTab:Label("Shutdown if moderator joins")
 securityTab:Label("â ï¸ Use with caution")
 
 -- Credits Tab
-Credits:Button("Made by Urbanstorm", function()
-	setclipboard("Urbanstorm")
+Credits:Button("Made by EricBerpa", function()
+	setclipboard("EricBerpa")
 end)
 
 Credits:Button("http://dsc.gg/project-stark - Click to copy", function()
