@@ -1,4 +1,4 @@
--- Project Berpa - No Key Loader
+-- Project Berpa - Game Router
 -- Legacy Main.lua entry point kept for compatibility.
 
 local Players = game:GetService("Players")
