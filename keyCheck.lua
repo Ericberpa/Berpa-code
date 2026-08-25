@@ -6,6 +6,8 @@ local CONFIG = {
 	identifier = "1186211",
 	provider = "Berpa Service",
 	junkieScriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/dd5890ef547d7bb901d97617c128cd4b6f16f89d53b7b545cdad94517d3eb743/download",
+	keyFolder = "ProjectBerpa",
+	keyFile = "ProjectBerpa/junkie.key",
 }
 
 local compile = loadstring or load
@@ -41,6 +43,87 @@ end
 Junkie.service = CONFIG.service
 Junkie.identifier = CONFIG.identifier
 Junkie.provider = CONFIG.provider
+
+local environment = type(getgenv) == "function" and getgenv() or _G
+
+local function trim(value)
+	if type(value) ~= "string" then
+		return nil
+	end
+
+	value = value:match("^%s*(.-)%s*$")
+	return value ~= "" and value or nil
+end
+
+local function saveKey(value)
+	value = trim(value)
+	if not value then
+		return
+	end
+
+	environment.PROJECT_BERPA_SAVED_KEY = value
+
+	if type(writefile) ~= "function" then
+		return
+	end
+
+	if type(makefolder) == "function" then
+		local folderExists = false
+		if type(isfolder) == "function" then
+			local ok, result = pcall(isfolder, CONFIG.keyFolder)
+			folderExists = ok and result == true
+		end
+
+		if not folderExists then
+			pcall(makefolder, CONFIG.keyFolder)
+		end
+	end
+
+	pcall(writefile, CONFIG.keyFile, value)
+end
+
+local function loadSavedKey()
+	local memoryKey = trim(environment.PROJECT_BERPA_SAVED_KEY)
+	if memoryKey then
+		return memoryKey
+	end
+
+	if type(readfile) ~= "function" then
+		return nil
+	end
+
+	if type(isfile) == "function" then
+		local ok, exists = pcall(isfile, CONFIG.keyFile)
+		if not ok or not exists then
+			return nil
+		end
+	end
+
+	local ok, value = pcall(readfile, CONFIG.keyFile)
+	value = ok and trim(value) or nil
+	if value then
+		environment.PROJECT_BERPA_SAVED_KEY = value
+	end
+	return value
+end
+
+local function clearSavedKey()
+	environment.PROJECT_BERPA_SAVED_KEY = nil
+
+	if type(deletefile) == "function" then
+		if type(isfile) ~= "function" then
+			pcall(deletefile, CONFIG.keyFile)
+			return
+		end
+
+		local ok, exists = pcall(isfile, CONFIG.keyFile)
+		if ok and exists then
+			pcall(deletefile, CONFIG.keyFile)
+		end
+	elseif type(writefile) == "function" then
+		pcall(writefile, CONFIG.keyFile, "")
+	end
+end
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -190,7 +273,7 @@ local verifyButton = addButton(
 )
 
 local status = addLabel(
-	"The script is keyless-ish. Bills are high, so one checkpoint helps a lot.",
+	"Saved keys are reused until they expire. One checkpoint helps with the bills.",
 	UDim2.fromOffset(24, 226),
 	UDim2.new(1, -48, 0, 52),
 	Enum.Font.Gotham,
@@ -239,7 +322,7 @@ getKeyButton.MouseButton1Click:Connect(function()
 end)
 
 local function runProtectedScript(userKey)
-	getgenv().SCRIPT_KEY = userKey
+	environment.SCRIPT_KEY = userKey
 	local source = download(CONFIG.junkieScriptUrl)
 	local chunk = source and compile(source)
 	if type(chunk) ~= "function" then
@@ -255,7 +338,19 @@ local function runProtectedScript(userKey)
 	end
 end
 
-local function verifyKey()
+local invalidSavedKeyReasons = {
+	KEY_INVALID = true,
+	KEY_EXPIRED = true,
+	HWID_BANNED = true,
+	KEY_INVALIDATED = true,
+	ALREADY_USED = true,
+	HWID_MISMATCH = true,
+	SERVICE_NOT_FOUND = true,
+	SERVICE_MISMATCH = true,
+	PREMIUM_REQUIRED = true,
+}
+
+local function verifyKey(usingSavedKey)
 	if busy then
 		return
 	end
@@ -266,7 +361,10 @@ local function verifyKey()
 	end
 
 	busy = true
-	setStatus("Checking key...", Color3.fromRGB(216, 203, 239))
+	setStatus(
+		usingSavedKey and "Checking saved key..." or "Checking key...",
+		Color3.fromRGB(216, 203, 239)
+	)
 
 	task.spawn(function()
 		local ok, result = pcall(Junkie.check_key, userKey)
@@ -274,6 +372,7 @@ local function verifyKey()
 			and (result.valid == true or result.success == true)
 
 		if valid then
+			saveKey(userKey)
 			setStatus("Key accepted. Loading Project Berpa...", Color3.fromRGB(134, 239, 172))
 			task.wait(0.25)
 			runProtectedScript(userKey)
@@ -287,6 +386,10 @@ local function verifyKey()
 			reason = "NETWORK_ERROR"
 		end
 
+		if invalidSavedKeyReasons[tostring(reason)] then
+			clearSavedKey()
+		end
+
 		setStatus("Key rejected: " .. tostring(reason), Color3.fromRGB(248, 113, 113))
 		busy = false
 	end)
@@ -298,3 +401,11 @@ keyBox.FocusLost:Connect(function(enterPressed)
 		verifyKey()
 	end
 end)
+
+local savedKey = loadSavedKey()
+if savedKey then
+	keyBox.Text = savedKey
+	task.defer(function()
+		verifyKey(true)
+	end)
+end
