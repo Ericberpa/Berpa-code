@@ -1,16 +1,23 @@
 -- Project Berpa - Junkie key system
--- Public loader used by ScriptBlox. The real script is hosted by Junkie.
+-- Public loader used by ScriptBlox. Game modules are selected only after Junkie validation.
 
 local CONFIG = {
 	service = "Project Berpa - Blade Ball",
 	identifier = "1186211",
 	provider = "Berpa Service",
 	junkieScriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/dd5890ef547d7bb901d97617c128cd4b6f16f89d53b7b545cdad94517d3eb743/download",
+	gameScripts = {
+		[10261267004] = "https://raw.githubusercontent.com/Ericberpa/Berpa-code/main/10261267004.lua",
+	},
 	keyFolder = "ProjectBerpa",
 	keyFile = "ProjectBerpa/junkie.key",
 }
 
-local compile = loadstring or load
+local environment = type(getgenv) == "function" and getgenv() or _G
+local compile = loadstring
+local deleteFile = environment.deletefile
+local protectGui = environment.protectgui
+local synapse = environment.syn
 if type(compile) ~= "function" then
 	return warn("[Project Berpa] loadstring is not supported by this executor.")
 end
@@ -43,8 +50,6 @@ end
 Junkie.service = CONFIG.service
 Junkie.identifier = CONFIG.identifier
 Junkie.provider = CONFIG.provider
-
-local environment = type(getgenv) == "function" and getgenv() or _G
 
 local function trim(value)
 	if type(value) ~= "string" then
@@ -110,15 +115,15 @@ end
 local function clearSavedKey()
 	environment.PROJECT_BERPA_SAVED_KEY = nil
 
-	if type(deletefile) == "function" then
+	if type(deleteFile) == "function" then
 		if type(isfile) ~= "function" then
-			pcall(deletefile, CONFIG.keyFile)
+			pcall(deleteFile, CONFIG.keyFile)
 			return
 		end
 
 		local ok, exists = pcall(isfile, CONFIG.keyFile)
 		if ok and exists then
-			pcall(deletefile, CONFIG.keyFile)
+			pcall(deleteFile, CONFIG.keyFile)
 		end
 	elseif type(writefile) == "function" then
 		pcall(writefile, CONFIG.keyFile, "")
@@ -159,10 +164,10 @@ gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = parent
 
-if type(protectgui) == "function" then
-	pcall(protectgui, gui)
-elseif syn and type(syn.protect_gui) == "function" then
-	pcall(syn.protect_gui, gui)
+if type(protectGui) == "function" then
+	pcall(protectGui, gui)
+elseif type(synapse) == "table" and type(synapse.protect_gui) == "function" then
+	pcall(synapse.protect_gui, gui)
 end
 
 local window = Instance.new("Frame")
@@ -246,7 +251,7 @@ local function addButton(name, text, position, color)
 	button.BorderSizePixel = 0
 	button.Position = position
 	button.Size = UDim2.new(0.5, -30, 0, 44)
-	button.Font = Enum.Font.GothamSemibold
+	button.Font = Enum.Font.GothamMedium
 	button.Text = text
 	button.TextColor3 = Color3.fromRGB(255, 255, 255)
 	button.TextSize = 14
@@ -323,7 +328,8 @@ end)
 
 local function runProtectedScript(userKey)
 	environment.SCRIPT_KEY = userKey
-	local source = download(CONFIG.junkieScriptUrl)
+	local sourceUrl = CONFIG.gameScripts[game.GameId] or CONFIG.junkieScriptUrl
+	local source = download(sourceUrl)
 	local chunk = source and compile(source)
 	if type(chunk) ~= "function" then
 		setStatus("Could not load the protected script.", Color3.fromRGB(248, 113, 113))
@@ -393,6 +399,7 @@ local function verifyKey(usingSavedKey)
 		setStatus("Key rejected: " .. tostring(reason), Color3.fromRGB(248, 113, 113))
 		busy = false
 	end)
+	return nil
 end
 
 verifyButton.MouseButton1Click:Connect(verifyKey)
