@@ -1,22 +1,40 @@
 -- Project Berpa - Junkie key system
+-- HUB_ROUTER_VERSION = "2026-09-24-v3"
 -- Public loader used by ScriptBlox. Game modules are selected only after Junkie validation.
 
 local CONFIG = {
+	-- This is the ONE Jnkie service used by the whole hub.
 	service = "Project Berpa - Blade Ball",
 	identifier = "1186211",
 	provider = "Berpa Service",
 
-	-- One Junkie service/key, different protected script per Roblox PlaceId.
-	gameScripts = {
-		[13772394625] = "https://api.jnkie.com/api/v1/luascripts/public/dd5890ef547d7bb901d97617c128cd4b6f16f89d53b7b545cdad94517d3eb743/download", -- Blade Ball
-		[114234929420007] = "https://api.jnkie.com/api/v1/luascripts/public/2c8e3468c84dd9c684c6d8e17aabc95599f15914b7c58fde7b5cfe3f19e4ed21/download", -- Bloxstrike
-		[94217045453265] = "https://api.jnkie.com/api/v1/luascripts/public/a8d38a5907e20dd56c2223a944a2fad031634917cd3f386551bfc547fc70e4ec/download", -- Dueling Grounds
+	-- Route by UniverseId first so teleports/subplaces still load the correct game.
+	games = {
+		[4777817887] = {
+			name = "Blade Ball",
+			scriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/dd5890ef547d7bb901d97617c128cd4b6f16f89d53b7b545cdad94517d3eb743/download",
+		},
+		[7633926880] = {
+			name = "Bloxstrike",
+			scriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/2c8e3468c84dd9c684c6d8e17aabc95599f15914b7c58fde7b5cfe3f19e4ed21/download",
+			hubUiUrl = "https://raw.githubusercontent.com/Ericberpa/Berpa-Hub-UI/main/Bloxstrike/UI.lua?v=20260924",
+		},
+		[9051406594] = {
+			name = "Dueling Grounds",
+			scriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/a8d38a5907e20dd56c2223a944a2fad031634917cd3f386551bfc547fc70e4ec/download",
+		},
+	},
+
+	-- Root PlaceId fallback. Useful if an executor reports GameId late/incorrectly.
+	placeToUniverse = {
+		[13772394625] = 4777817887,
+		[114234929420007] = 7633926880,
+		[94217045453265] = 9051406594,
 	},
 
 	keyFolder = "ProjectBerpa",
 	keyFile = "ProjectBerpa/junkie.key",
 }
-
 local environment = type(getgenv) == "function" and getgenv() or _G
 local compile = loadstring
 local deleteFile = environment.deletefile
@@ -54,6 +72,23 @@ end
 Junkie.service = CONFIG.service
 Junkie.identifier = CONFIG.identifier
 Junkie.provider = CONFIG.provider
+
+local function getCurrentGameConfig()
+	local universeId = tonumber(game.GameId)
+	local placeId = tonumber(game.PlaceId)
+
+	local config = universeId and CONFIG.games[universeId] or nil
+	if config then
+		return config, universeId, placeId
+	end
+
+	local mappedUniverse = placeId and CONFIG.placeToUniverse[placeId] or nil
+	if mappedUniverse then
+		return CONFIG.games[mappedUniverse], mappedUniverse, placeId
+	end
+
+	return nil, universeId, placeId
+end
 
 local function trim(value)
 	if type(value) ~= "string" then
@@ -333,22 +368,58 @@ end)
 local function runProtectedScript(userKey)
 	environment.SCRIPT_KEY = userKey
 
-	local placeId = game.PlaceId
-	local sourceUrl = CONFIG.gameScripts[placeId]
-
-	if not sourceUrl then
+	local gameConfig, universeId, placeId = getCurrentGameConfig()
+	if not gameConfig then
 		setStatus(
-			"Unsupported game. PlaceId: " .. tostring(placeId),
+			("Unsupported game. UniverseId: %s | PlaceId: %s"):format(
+				tostring(universeId),
+				tostring(placeId)
+			),
 			Color3.fromRGB(248, 113, 113)
 		)
 		busy = false
 		return
 	end
 
-	local source = download(sourceUrl)
+	setStatus(
+		"Key accepted. Loading " .. gameConfig.name .. "...",
+		Color3.fromRGB(134, 239, 172)
+	)
+
+	-- Bloxstrike's protected script expects its public UI bridge first.
+	if type(gameConfig.hubUiUrl) == "string" and gameConfig.hubUiUrl ~= "" then
+		local uiSource = download(gameConfig.hubUiUrl)
+		local uiChunk = uiSource and compile(uiSource)
+
+		if type(uiChunk) ~= "function" then
+			setStatus(
+				"Could not load " .. gameConfig.name .. " UI.",
+				Color3.fromRGB(248, 113, 113)
+			)
+			busy = false
+			return
+		end
+
+		local uiOk, uiError = pcall(uiChunk)
+		if not uiOk then
+			warn("[Project Berpa] UI error: " .. tostring(uiError))
+			setStatus(
+				gameConfig.name .. " UI failed to start.",
+				Color3.fromRGB(248, 113, 113)
+			)
+			busy = false
+			return
+		end
+	end
+
+	local source = download(gameConfig.scriptUrl)
 	local chunk = source and compile(source)
+
 	if type(chunk) ~= "function" then
-		setStatus("Could not load the protected script.", Color3.fromRGB(248, 113, 113))
+		setStatus(
+			"Could not load " .. gameConfig.name .. " protected script.",
+			Color3.fromRGB(248, 113, 113)
+		)
 		busy = false
 		return
 	end
@@ -357,7 +428,7 @@ local function runProtectedScript(userKey)
 
 	local ok, runtimeError = pcall(chunk)
 	if not ok then
-		warn("[Project Berpa] " .. tostring(runtimeError))
+		warn("[Project Berpa] " .. gameConfig.name .. ": " .. tostring(runtimeError))
 	end
 end
 
@@ -396,8 +467,13 @@ local function verifyKey(usingSavedKey)
 
 		if valid then
 			saveKey(userKey)
-			setStatus("Key accepted. Loading Project Berpa...", Color3.fromRGB(134, 239, 172))
-			task.wait(0.25)
+			local detectedGame = getCurrentGameConfig()
+			setStatus(
+				detectedGame and ("Key accepted. Preparing " .. detectedGame.name .. "...")
+					or "Key accepted. Detecting game...",
+				Color3.fromRGB(134, 239, 172)
+			)
+			task.wait(0.15)
 			runProtectedScript(userKey)
 			return
 		end
