@@ -5,10 +5,14 @@ local CONFIG = {
 	service = "Project Berpa - Blade Ball",
 	identifier = "1186211",
 	provider = "Berpa Service",
-	junkieScriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/dd5890ef547d7bb901d97617c128cd4b6f16f89d53b7b545cdad94517d3eb743/download",
+
+	-- One Junkie service/key, different protected script per Roblox PlaceId.
 	gameScripts = {
-		[10261267004] = "https://raw.githubusercontent.com/Ericberpa/Berpa-code/main/10261267004.lua",
+		[13772394625] = "https://api.jnkie.com/api/v1/luascripts/public/dd5890ef547d7bb901d97617c128cd4b6f16f89d53b7b545cdad94517d3eb743/download", -- Blade Ball
+		[114234929420007] = "https://api.jnkie.com/api/v1/luascripts/public/2c8e3468c84dd9c684c6d8e17aabc95599f15914b7c58fde7b5cfe3f19e4ed21/download", -- Bloxstrike
+		[94217045453265] = "https://api.jnkie.com/api/v1/luascripts/public/a8d38a5907e20dd56c2223a944a2fad031634917cd3f386551bfc547fc70e4ec/download", -- Dueling Grounds
 	},
+
 	keyFolder = "ProjectBerpa",
 	keyFile = "ProjectBerpa/junkie.key",
 }
@@ -328,7 +332,19 @@ end)
 
 local function runProtectedScript(userKey)
 	environment.SCRIPT_KEY = userKey
-	local sourceUrl = CONFIG.gameScripts[game.GameId] or CONFIG.junkieScriptUrl
+
+	local placeId = game.PlaceId
+	local sourceUrl = CONFIG.gameScripts[placeId]
+
+	if not sourceUrl then
+		setStatus(
+			"Unsupported game. PlaceId: " .. tostring(placeId),
+			Color3.fromRGB(248, 113, 113)
+		)
+		busy = false
+		return
+	end
+
 	local source = download(sourceUrl)
 	local chunk = source and compile(source)
 	if type(chunk) ~= "function" then
@@ -338,6 +354,7 @@ local function runProtectedScript(userKey)
 	end
 
 	gui:Destroy()
+
 	local ok, runtimeError = pcall(chunk)
 	if not ok then
 		warn("[Project Berpa] " .. tostring(runtimeError))
