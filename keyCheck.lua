@@ -1,5 +1,5 @@
 -- Project Berpa - Junkie key system
--- HUB_ROUTER_VERSION = "2026-09-24-v3"
+-- HUB_ROUTER_VERSION = "2026-09-27-v4"
 -- Public loader used by ScriptBlox. Game modules are selected only after Junkie validation.
 
 local CONFIG = {
@@ -23,6 +23,11 @@ local CONFIG = {
 			name = "Dueling Grounds",
 			scriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/a8d38a5907e20dd56c2223a944a2fad031634917cd3f386551bfc547fc70e4ec/download",
 		},
+		[10464566605] = {
+			name = "BLITZ FPS",
+			scriptUrl = "https://api.jnkie.com/api/v1/luascripts/public/5ff9acf68bea5b70b2a23eb2810b040115be8d56674c0290890d298d69819733/download",
+			hubUiUrl = "https://raw.githubusercontent.com/Ericberpa/Berpa-Hub-UI/main/BlitzFPS/UI.lua",
+		},
 	},
 
 	-- Root PlaceId fallback. Useful if an executor reports GameId late/incorrectly.
@@ -30,6 +35,7 @@ local CONFIG = {
 		[13772394625] = 4777817887,
 		[114234929420007] = 7633926880,
 		[94217045453265] = 9051406594,
+		[83469115925484] = 10464566605,
 	},
 
 	keyFolder = "ProjectBerpa",
